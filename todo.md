@@ -12,11 +12,11 @@
 
 ~~D. Jede Aufgabe zeigt ihr Erstellungsdatum und -uhrzeit an~~
 
-E. Dringende Aufgaben werden visuell hervorgehoben
+~~E. Dringende Aufgaben werden visuell hervorgehoben~~
 
 ~~F. Eine Zusammenfassung zeigt die Anzahl der offenen und erledigten Aufgaben~~
 
-G. Alles soll accessible sein - also u.a. mit Tastatur bedienbar, mit Screenreader nutzbar und gut lesbar
+~~G. Alles soll accessible sein - also u.a. mit Tastatur bedienbar, mit Screenreader nutzbar und gut lesbar~~
 
 ### Aktionen
 
