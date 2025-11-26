@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import type { Task } from "./types"
-import { TaskSummary } from "./components/TaskSummary"
+import { TaskSummary } from "./components/tasksummary"
 
 const CATEGORIES: string[] = ["Work", "Personal", "Shopping", "Others"]
 
