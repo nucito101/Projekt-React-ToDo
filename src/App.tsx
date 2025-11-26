@@ -72,6 +72,14 @@ function App() {
     setTasks(tasks.map((task) => (task.id === taskId ? { ...task, category: newCategory } : task)))
   }
 
+  const getTasksByCategory = () => {
+    const grouped: { [key: string]: Task[] } = {}
+    CATEGORIES.forEach((category) => {
+      grouped[category] = tasks.filter((task) => task.category === category)
+    })
+    return grouped
+  }
+
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       addTask()
@@ -104,12 +112,13 @@ function App() {
               onKeyDown={handleKeyPress}
               placeholder="add a task ..."
               aria-label="New Task"
-              className="flex-1 min-w-[200px] text-lg p-4 border-4 border-black bg-white text-black placeholder:text-gray-500 placeholder:uppercase focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-black focus:bg-black focus:text-white transition-all"
+              className="flex-1 min-w-[200px] text-lg p-4 border-4 border-black bg-white text-black placeholder:text-gray-500 placeholder:uppercase focus:bg-black focus:text-white transition-all"
             />
             <select
               value={selectedCategory}
               onChange={(event) => setSelectedCategory(event.target.value)}
-              aria-label="Select Category">
+              aria-label="Select Category"
+              className="px-4 py-4 border-4 border-black bg-white text-black font-bold uppercase text-base cursor-pointer transition-all hover:bg-black hover:text-white">
               {CATEGORIES.map((category) => (
                 <option key={category} value={category}>
                   {category}
@@ -119,7 +128,7 @@ function App() {
 
             <button
               onClick={addTask}
-              className="px-6 py-4 border-4 border-black bg-black text-white font-bold uppercase text-base whitespace-nowrap cursor-pointer transition-all hover:bg-white hover:text-black hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600">
+              className="px-6 py-4 border-4 border-black bg-black text-white font-bold uppercase text-base whitespace-nowrap cursor-pointer transition-all hover:bg-white hover:text-black hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none">
               Add Task
             </button>
           </div>
@@ -128,107 +137,137 @@ function App() {
         {/* Task Summary */}
         <TaskSummary tasks={tasks} />
 
-        {/* Tasks Container */}
-        <div className="mb-8">
-          {tasks.map((task) => (
-            <div
-              key={task.id}
-              className={`border-4 border-black p-6 mb-4 bg-white relative ${
-                task.status === "completed" ? "bg-gray-100 opacity-70" : ""
-              }`}>
-              <div className="mb-4">
-                {editingTaskId === task.id ? (
-                  <div className="flex flex-col gap-4">
-                    <input
-                      type="text"
-                      value={editingValue}
-                      onChange={(e) => setEditingValue(e.target.value)}
-                      onKeyDown={(e) => handleEditingKeyPress(e, task.id)}
-                      aria-label="Edit Task"
-                      autoFocus
-                      className="w-full text-lg p-4 border-4 border-black bg-white text-black focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-black focus:bg-black focus:text-white transition-all"
-                    />
-                    <div className="flex gap-4">
-                      <button
-                        onClick={() => saveEditing(task.id)}
-                        className="px-6 py-4 border-4 border-black bg-black text-white font-bold uppercase text-base cursor-pointer transition-all hover:bg-white hover:text-black hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600">
-                        Save
-                      </button>
-                      <button
-                        onClick={cancelEditing}
-                        className="px-6 py-4 border-4 border-black bg-white text-black font-bold uppercase text-base cursor-pointer transition-all hover:bg-black hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600">
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <p
-                      className={`text-xl font-bold mb-2 break-words ${
-                        task.status === "completed" ? "line-through" : ""
-                      }`}>
-                      {task.description}
-                    </p>
-                    <p className="text-sm text-gray-600 uppercase mb-2">
-                      <span className="sr-only">Created at: </span>
-                      {task.createdAt.toLocaleString("de-DE")}
-                    </p>
-                    {task.status === "open" && isTaskUrgent(task) && (
-                      <span
-                        className="inline-block bg-red-600 text-white px-4 py-1 border-4 border-red-600 text-sm font-black uppercase mt-2 animate-brutal-pulse"
-                        role="status"
-                        aria-live="polite">
-                        Urgent
-                      </span>
-                    )}
-                  </>
-                )}
+        {/* Categories */}
+        {Object.entries(getTasksByCategory()).map(([category, categoryTasks]) => (
+          <div key={category} className="mb-8">
+            <h2 className="text-3xl font-black uppercase tracking-tight mb-4 border-4 border-black p-4 bg-white text-black flex items-center justify-between">
+              <span>{category}</span>
+              <span className="text-2xl px-4 py-2 bg-black text-white border-4 border-black">
+                {categoryTasks.length}
+              </span>
+            </h2>
+
+            {categoryTasks.length === 0 ? (
+              <div className="border-4 border-dashed border-black p-8 text-center bg-white mb-4">
+                <p className="text-lg uppercase text-gray-600">No tasks in this category.</p>
               </div>
-
-              {editingTaskId !== task.id && (
-                <div className="flex gap-4 flex-wrap mt-6">
-                  {task.status === "open" && (
-                    <button
-                      onClick={() => startEditing(task)}
-                      aria-label={`Edit task: ${task.description}`}
-                      className="px-6 py-4 border-4 border-black bg-white text-black font-bold uppercase text-base cursor-pointer transition-all hover:bg-black hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600">
-                      Edit
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => toggleTaskStatus(task.id)}
-                    aria-label={
-                      task.status === "open"
-                        ? `Mark task as completed: ${task.description}`
-                        : `Restore task: ${task.description}`
-                    }
-                    className={`px-6 py-4 border-4 border-black font-bold uppercase text-base cursor-pointer transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600 ${
-                      task.status === "open"
-                        ? "bg-black text-white hover:bg-white hover:text-black"
-                        : "bg-white text-black hover:bg-black hover:text-white"
+            ) : (
+              <div className="space-y-4">
+                {categoryTasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className={`border-4 border-black p-6 bg-white relative ${
+                      task.status === "completed" ? "bg-gray-100 opacity-70" : ""
                     }`}>
-                    {task.status === "open" ? "Done" : "Restore"}
-                  </button>
+                    <div className="mb-4">
+                      {editingTaskId === task.id ? (
+                        <div className="flex flex-col gap-4">
+                          <input
+                            type="text"
+                            value={editingValue}
+                            onChange={(e) => setEditingValue(e.target.value)}
+                            onKeyDown={(e) => handleEditingKeyPress(e, task.id)}
+                            aria-label="Edit Task"
+                            autoFocus
+                            className="w-full text-lg p-4 border-4 border-black bg-white text-black"
+                          />
+                          <div className="flex gap-4">
+                            <button
+                              onClick={() => saveEditing(task.id)}
+                              className="px-6 py-4 border-4 border-black bg-black text-white font-bold uppercase text-base cursor-pointer transition-all hover:bg-white hover:text-black hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none">
+                              Save
+                            </button>
+                            <button
+                              onClick={cancelEditing}
+                              className="px-6 py-4 border-4 border-black bg-white text-black font-bold uppercase text-base cursor-pointer transition-all hover:bg-black hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none">
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <p
+                            className={`text-xl font-bold mb-2 break-words ${
+                              task.status === "completed" ? "line-through" : ""
+                            }`}>
+                            {task.description}
+                          </p>
+                          <p className="text-sm text-gray-600 uppercase mb-2">
+                            <span className="sr-only">Created at: </span>
+                            {task.createdAt.toLocaleString("de-DE")}
+                          </p>
+                          {task.status === "open" && isTaskUrgent(task) && (
+                            <span
+                              className="inline-block bg-red-600 text-white px-4 py-1 border-4 border-red-600 text-sm font-black uppercase mt-2 animate-brutal-pulse"
+                              role="status"
+                              aria-live="polite">
+                              Urgent
+                            </span>
+                          )}
 
-                  <button
-                    onClick={() => deleteTask(task.id)}
-                    aria-label={`Delete task: ${task.description}`}
-                    className="px-6 py-4 border-4 border-red-600 bg-red-600 text-white font-bold uppercase text-base cursor-pointer transition-all hover:bg-white hover:text-red-600 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_red-600] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600">
-                    Delete
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+                          {task.status === "open" && (
+                            <div className="mt-4 flex items-center gap-3">
+                              <label htmlFor={`category-${task.id}`} className="text-sm font-bold uppercase">
+                                Category:
+                              </label>
+                              <select
+                                id={`category-${task.id}`}
+                                value={task.category}
+                                onChange={(e) => changeCategory(task.id, e.target.value)}
+                                aria-label={`Change category for task: ${task.description}`}
+                                className="px-3 py-2 border-4 border-black bg-white text-black font-bold uppercase text-sm cursor-pointer transition-all hover:bg-black hover:text-white">
+                                {CATEGORIES.map((cat) => (
+                                  <option key={cat} value={cat}>
+                                    {cat}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
 
-        {/* Empty State */}
-        {tasks.length === 0 && (
-          <div className="border-4 border-dashed border-black p-12 text-center bg-white">
-            <p className="text-xl uppercase text-gray-600">No tasks available. Please add a task.</p>
+                    {editingTaskId !== task.id && (
+                      <div className="flex gap-4 flex-wrap mt-6">
+                        {task.status === "open" && (
+                          <button
+                            onClick={() => startEditing(task)}
+                            aria-label={`Edit task: ${task.description}`}
+                            className="px-6 py-4 border-4 border-black bg-white text-black font-bold uppercase text-base cursor-pointer transition-all hover:bg-black hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none">
+                            Edit
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => toggleTaskStatus(task.id)}
+                          aria-label={
+                            task.status === "open"
+                              ? `Mark task as completed: ${task.description}`
+                              : `Restore task: ${task.description}`
+                          }
+                          className={`px-6 py-4 border-4 border-black font-bold uppercase text-base cursor-pointer transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none ${
+                            task.status === "open"
+                              ? "bg-black text-white hover:bg-white hover:text-black"
+                              : "bg-white text-black hover:bg-black hover:text-white"
+                          }`}>
+                          {task.status === "open" ? "Done" : "Restore"}
+                        </button>
+
+                        <button
+                          onClick={() => deleteTask(task.id)}
+                          aria-label={`Delete task: ${task.description}`}
+                          className="px-6 py-4 border-4 border-red-600 bg-red-600 text-white font-bold uppercase text-base cursor-pointer transition-all hover:bg-white hover:text-red-600 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_red-600] active:translate-x-0 active:translate-y-0 active:shadow-none">
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        ))}
       </div>
     </div>
   )

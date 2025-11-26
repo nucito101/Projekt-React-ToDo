@@ -36,8 +36,8 @@
 
 Aufgaben können jetzt Kategorien zugeordnet werden (z.B. „Arbeit", „Privat", „Einkaufen"). Erweitere deine Anwendung:
 
-A. Nutzer können beim Erstellen einer Aufgabe eine Kategorie auswählen
+~~A. Nutzer können beim Erstellen einer Aufgabe eine Kategorie auswählen~~
 
-B. Nutzer können eine Aufgabe in eine andere Kategorie verschieben
+~~B. Nutzer können eine Aufgabe in eine andere Kategorie verschieben~~
 
-C. Aufgaben werden in der Benutzeroberfläche nach Kategorien gruppiert, wobei jede Kategorie ihre eigene Aufgabenliste anzeigt
+~~C. Aufgaben werden in der Benutzeroberfläche nach Kategorien gruppiert, wobei jede Kategorie ihre eigene Aufgabenliste anzeigt~~
