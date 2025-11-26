@@ -5,4 +5,5 @@ export interface Task {
   description: string
   createdAt: Date
   status: TasksStatus
+  category: string
 }

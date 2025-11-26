@@ -3,11 +3,13 @@ import type { Task } from "./types"
 import { TaskSummary } from "./components/TaskSummary"
 
 function App() {
+  const CATEGORIES: string[] = ["Work", "Personal", "Shopping", "Others"]
   const [tasks, setTasks] = useState<Task[]>([])
   const [inputValue, setInputValue] = useState("")
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState("")
   const [, forcedUpdtate] = useState({}) // State to force re-render
+  const [selectedCategory, setSelectedCategory] = useState<string>(CATEGORIES[0])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -32,6 +34,7 @@ function App() {
       description: inputValue,
       createdAt: new Date(),
       status: "open",
+      category: selectedCategory,
     }
 
     setTasks([...tasks, newTask])
@@ -63,6 +66,10 @@ function App() {
   const cancelEditing = () => {
     setEditingTaskId(null)
     setEditingValue("")
+  }
+
+  const changeCategory = (taskId: string, newCategory: string) => {
+    setTasks(tasks.map((task) => (task.id === taskId ? { ...task, category: newCategory } : task)))
   }
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -99,6 +106,17 @@ function App() {
               aria-label="New Task"
               className="flex-1 min-w-[200px] text-lg p-4 border-4 border-black bg-white text-black placeholder:text-gray-500 placeholder:uppercase focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-black focus:bg-black focus:text-white transition-all"
             />
+            <select
+              value={selectedCategory}
+              onChange={(event) => setSelectedCategory(event.target.value)}
+              aria-label="Select Category">
+              {CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+
             <button
               onClick={addTask}
               className="px-6 py-4 border-4 border-black bg-black text-white font-bold uppercase text-base whitespace-nowrap cursor-pointer transition-all hover:bg-white hover:text-black hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600">
