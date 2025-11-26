@@ -19,6 +19,16 @@ function App() {
     setInputValue("") // Clear the input field after adding the task
   }
 
+  const toggleTaskStatus = (id: string) => {
+    setTasks(
+      tasks.map((task) => (task.id === id ? { ...task, status: task.status === "open" ? "completed" : "open" } : task))
+    )
+  }
+
+  const deleteTask = (id: string) => {
+    setTasks(tasks.filter((task) => task.id !== id))
+  }
+
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       addTask()
@@ -51,6 +61,12 @@ function App() {
                   <p>{task.description}</p>
                   <p>createdAt {task.createdAt.toLocaleString("de-DE")}</p>
                   <p>Status: {task.status === "open" ? "Open" : "Completed"}</p>
+                </div>
+                <div>
+                  <button onClick={() => toggleTaskStatus(task.id)}>
+                    {task.status === "open" ? "Done" : "Restore"}
+                  </button>
+                  <button onClick={() => deleteTask(task.id)}>Delete</button>
                 </div>
               </div>
             ))}
