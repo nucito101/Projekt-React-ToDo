@@ -80,78 +80,139 @@ function App() {
   }
 
   return (
-    <>
-      <div>
-        <div>
-          <h1>To-Do Liste</h1>
-          <div>
-            <div>
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="add a task ..."
-                aria-label="New Task"
-              />
-              <button onClick={addTask}>Add Task</button>
-            </div>
+    <div className="max-w-4xl mx-auto p-8">
+      <div className="border-4 border-black p-8 bg-white">
+        {/* Header */}
+        <h1 className="text-5xl font-black uppercase tracking-tighter mb-8 border-4 border-black p-6 bg-black text-white">
+          To-Do Liste
+        </h1>
+
+        {/* Input Section */}
+        <div className="mb-12 border-4 border-black p-6 bg-white">
+          <div className="flex gap-4 flex-wrap">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="add a task ..."
+              aria-label="New Task"
+              className="flex-1 min-w-[200px] text-lg p-4 border-4 border-black bg-white text-black placeholder:text-gray-500 placeholder:uppercase focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-black focus:bg-black focus:text-white transition-all"
+            />
+            <button
+              onClick={addTask}
+              className="px-6 py-4 border-4 border-black bg-black text-white font-bold uppercase text-base whitespace-nowrap cursor-pointer transition-all hover:bg-white hover:text-black hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600">
+              Add Task
+            </button>
           </div>
-
-          <div>
-            <TaskSummary tasks={tasks} />
-          </div>
-
-          <div>
-            {tasks.map((task) => (
-              <div key={task.id}>
-                <div>
-                  <div>
-                    {editingTaskId === task.id ? (
-                      <div>
-                        <input
-                          type="text"
-                          value={editingValue}
-                          onChange={(e) => setEditingValue(e.target.value)}
-                          onKeyDown={(e) => handleEditingKeyPress(e, task.id)}
-                          aria-label="Edit Task"
-                        />
-                        <div>
-                          <button onClick={() => saveEditing(task.id)}>Save</button>
-                          <button onClick={cancelEditing}>Cancel</button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <p>{task.description}</p>
-                        <p>createdAt {task.createdAt.toLocaleString("de-DE")}</p>
-                        {task.status === "open" && isTaskUrgent(task) && <span>Urgent</span>}
-                      </>
-                    )}
-                  </div>
-
-                  {editingTaskId !== task.id && (
-                    <div>
-                      {task.status === "open" && <button onClick={() => startEditing(task)}>Edit</button>}
-
-                      <button
-                        onClick={() => {
-                          toggleTaskStatus(task.id)
-                        }}>
-                        {task.status === "open" ? "Done" : "Restore"}
-                      </button>
-
-                      <button onClick={() => deleteTask(task.id)}>Delete</button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div>{tasks.length === 0 && <p>No tasks available. Please add a task.</p>}</div>
         </div>
+
+        {/* Task Summary */}
+        <TaskSummary tasks={tasks} />
+
+        {/* Tasks Container */}
+        <div className="mb-8">
+          {tasks.map((task) => (
+            <div
+              key={task.id}
+              className={`border-4 border-black p-6 mb-4 bg-white relative ${
+                task.status === "completed" ? "bg-gray-100 opacity-70" : ""
+              }`}>
+              <div className="mb-4">
+                {editingTaskId === task.id ? (
+                  <div className="flex flex-col gap-4">
+                    <input
+                      type="text"
+                      value={editingValue}
+                      onChange={(e) => setEditingValue(e.target.value)}
+                      onKeyDown={(e) => handleEditingKeyPress(e, task.id)}
+                      aria-label="Edit Task"
+                      autoFocus
+                      className="w-full text-lg p-4 border-4 border-black bg-white text-black focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-black focus:bg-black focus:text-white transition-all"
+                    />
+                    <div className="flex gap-4">
+                      <button
+                        onClick={() => saveEditing(task.id)}
+                        className="px-6 py-4 border-4 border-black bg-black text-white font-bold uppercase text-base cursor-pointer transition-all hover:bg-white hover:text-black hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600">
+                        Save
+                      </button>
+                      <button
+                        onClick={cancelEditing}
+                        className="px-6 py-4 border-4 border-black bg-white text-black font-bold uppercase text-base cursor-pointer transition-all hover:bg-black hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p
+                      className={`text-xl font-bold mb-2 break-words ${
+                        task.status === "completed" ? "line-through" : ""
+                      }`}>
+                      {task.description}
+                    </p>
+                    <p className="text-sm text-gray-600 uppercase mb-2">
+                      <span className="sr-only">Created at: </span>
+                      {task.createdAt.toLocaleString("de-DE")}
+                    </p>
+                    {task.status === "open" && isTaskUrgent(task) && (
+                      <span
+                        className="inline-block bg-red-600 text-white px-4 py-1 border-4 border-red-600 text-sm font-black uppercase mt-2 animate-brutal-pulse"
+                        role="status"
+                        aria-live="polite">
+                        Urgent
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {editingTaskId !== task.id && (
+                <div className="flex gap-4 flex-wrap mt-6">
+                  {task.status === "open" && (
+                    <button
+                      onClick={() => startEditing(task)}
+                      aria-label={`Edit task: ${task.description}`}
+                      className="px-6 py-4 border-4 border-black bg-white text-black font-bold uppercase text-base cursor-pointer transition-all hover:bg-black hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600">
+                      Edit
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => toggleTaskStatus(task.id)}
+                    aria-label={
+                      task.status === "open"
+                        ? `Mark task as completed: ${task.description}`
+                        : `Restore task: ${task.description}`
+                    }
+                    className={`px-6 py-4 border-4 border-black font-bold uppercase text-base cursor-pointer transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600 ${
+                      task.status === "open"
+                        ? "bg-black text-white hover:bg-white hover:text-black"
+                        : "bg-white text-black hover:bg-black hover:text-white"
+                    }`}>
+                    {task.status === "open" ? "Done" : "Restore"}
+                  </button>
+
+                  <button
+                    onClick={() => deleteTask(task.id)}
+                    aria-label={`Delete task: ${task.description}`}
+                    className="px-6 py-4 border-4 border-red-600 bg-red-600 text-white font-bold uppercase text-base cursor-pointer transition-all hover:bg-white hover:text-red-600 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_red-600] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus:outline-4 focus:outline-offset-4 focus:outline-red-600">
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {tasks.length === 0 && (
+          <div className="border-4 border-dashed border-black p-12 text-center bg-white">
+            <p className="text-xl uppercase text-gray-600">No tasks available. Please add a task.</p>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   )
 }
 
