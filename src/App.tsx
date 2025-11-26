@@ -1,5 +1,4 @@
 import { useState } from "react"
-import "./App.css"
 import type { Task } from "./types"
 
 function App() {
@@ -26,7 +25,42 @@ function App() {
     }
   }
 
-  return <></>
+  return (
+    <>
+      <div>
+        <div>
+          <h1>To-Do Liste</h1>
+          <div>
+            <div>
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder="add a task ..."
+                aria-label="New Task"
+              />
+              <button onClick={addTask}>Add Task</button>
+            </div>
+          </div>
+
+          <div>
+            {tasks.map((task) => (
+              <div key={task.id}>
+                <div>
+                  <p>{task.description}</p>
+                  <p>createdAt {task.createdAt.toLocaleString("de-DE")}</p>
+                  <p>Status: {task.status === "open" ? "Open" : "Completed"}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {tasks.length === 0 && <p>No tasks available. Please add a task.</p>}
+        </div>
+      </div>
+    </>
+  )
 }
 
 export default App
