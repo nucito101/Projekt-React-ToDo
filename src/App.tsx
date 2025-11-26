@@ -1,9 +1,11 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import type { Task } from "./types"
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [inputValue, setInputValue] = useState("")
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
+  const [editingValue, setEditingValue] = useState("")
 
   const addTask = () => {
     if (inputValue.trim() === "") return // Prevent adding empty tasks
@@ -29,9 +31,34 @@ function App() {
     setTasks(tasks.filter((task) => task.id !== id))
   }
 
+  const startEditing = (task: Task) => {
+    setEditingTaskId(task.id)
+    setEditingValue(task.description)
+  }
+
+  const saveEditing = (id: string) => {
+    if (editingValue.trim() === "") return // Prevent saving empty descriptions
+    setTasks(tasks.map((task) => (task.id === id ? { ...task, description: editingValue } : task)))
+    setEditingTaskId(null)
+    setEditingValue("")
+  }
+
+  const cancelEditing = () => {
+    setEditingTaskId(null)
+    setEditingValue("")
+  }
+
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       addTask()
+    }
+  }
+
+  const handleEditingKeyPress = (event: React.KeyboardEvent<HTMLInputElement>, id: string) => {
+    if (event.key === "Enter") {
+      saveEditing(id)
+    } else if (event.key === "Escape") {
+      cancelEditing()
     }
   }
 
@@ -58,21 +85,48 @@ function App() {
             {tasks.map((task) => (
               <div key={task.id}>
                 <div>
-                  <p>{task.description}</p>
-                  <p>createdAt {task.createdAt.toLocaleString("de-DE")}</p>
-                  <p>Status: {task.status === "open" ? "Open" : "Completed"}</p>
-                </div>
-                <div>
-                  <button onClick={() => toggleTaskStatus(task.id)}>
-                    {task.status === "open" ? "Done" : "Restore"}
-                  </button>
-                  <button onClick={() => deleteTask(task.id)}>Delete</button>
+                  <div>
+                    {editingTaskId === task.id ? (
+                      <div>
+                        <input
+                          type="text"
+                          value={editingValue}
+                          onChange={(e) => setEditingValue(e.target.value)}
+                          onKeyDown={(e) => handleEditingKeyPress(e, task.id)}
+                          aria-label="Edit Task"
+                        />
+                        <div>
+                          <button onClick={() => saveEditing(task.id)}>Save</button>
+                          <button onClick={cancelEditing}>Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <p>{task.description}</p>
+                        <p>createdAt {task.createdAt.toLocaleString("de-DE")}</p>
+                      </>
+                    )}
+                  </div>
+
+                  {editingTaskId !== task.id && (
+                    <div>
+                      {task.status === "open" && <button onClick={() => startEditing(task)}>Edit</button>}
+
+                      <button
+                        onClick={() => {
+                          toggleTaskStatus(task.id)
+                        }}>
+                        {task.status === "open" ? "Done" : "Restore"}
+                      </button>
+
+                      <button onClick={() => deleteTask(task.id)}>Delete</button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
-
-          {tasks.length === 0 && <p>No tasks available. Please add a task.</p>}
+          <div>{tasks.length === 0 && <p>No tasks available. Please add a task.</p>}</div>
         </div>
       </div>
     </>
