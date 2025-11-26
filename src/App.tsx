@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react"
 import type { Task } from "./types"
 import { TaskSummary } from "./components/TaskSummary"
 
+const CATEGORIES: string[] = ["Work", "Personal", "Shopping", "Others"]
+
 function App() {
-  const CATEGORIES: string[] = ["Work", "Personal", "Shopping", "Others"]
   const [tasks, setTasks] = useState<Task[]>([])
   const [inputValue, setInputValue] = useState("")
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
