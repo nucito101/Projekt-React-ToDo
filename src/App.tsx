@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import type { Task } from "./types"
 
 function App() {
@@ -6,6 +6,22 @@ function App() {
   const [inputValue, setInputValue] = useState("")
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState("")
+  const [, forcedUpdtate] = useState({}) // State to force re-render
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      forcedUpdtate({})
+    }, 1000)
+    return () => clearInterval(interval)
+  }, []) // Re-render every second
+
+  const isTaskUrgent = (task: Task): boolean => {
+    if (task.status === "completed") return false
+    const now = new Date()
+    const createdTime = task.createdAt.getTime()
+    const oneMinute = 60 * 1000
+    return now.getTime() - createdTime > oneMinute
+  }
 
   const addTask = () => {
     if (inputValue.trim() === "") return // Prevent adding empty tasks
@@ -104,6 +120,7 @@ function App() {
                       <>
                         <p>{task.description}</p>
                         <p>createdAt {task.createdAt.toLocaleString("de-DE")}</p>
+                        {task.status === "open" && isTaskUrgent(task) && <span>Urgent</span>}
                       </>
                     )}
                   </div>
