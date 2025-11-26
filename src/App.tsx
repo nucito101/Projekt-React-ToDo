@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import type { Task } from "./types"
+import { TaskSummary } from "./components/TaskSummary"
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -95,6 +96,10 @@ function App() {
               />
               <button onClick={addTask}>Add Task</button>
             </div>
+          </div>
+
+          <div>
+            <TaskSummary tasks={tasks} />
           </div>
 
           <div>
